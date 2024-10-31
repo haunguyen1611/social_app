@@ -2,6 +2,7 @@ import { VStack,Box,Flex,Text,Link, useToast } from "@chakra-ui/react"
 import { Menu,MenuButton,MenuList,MenuItem } from "@chakra-ui/react"
 import { Portal } from "@chakra-ui/react"
 import { Avatar } from "@chakra-ui/react"
+import React from "react"
 import {BsInstagram} from "react-icons/bs"
 import {CgMoreO} from "react-icons/cg"
 const UserHeader = () => {

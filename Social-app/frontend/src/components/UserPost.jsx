@@ -5,6 +5,7 @@ import { Box, Text, Image } from "@chakra-ui/react";
 import { BsThreeDots } from "react-icons/bs";
 import Actions from "./Actions";
 import { useState } from "react";
+import React from "react";
 const UserPost = ({ likes, replies, postImg, postTitle }) => {
     const [liked, setliked] = useState(false);
     return (

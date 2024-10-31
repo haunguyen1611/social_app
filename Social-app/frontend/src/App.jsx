@@ -3,6 +3,7 @@ import { Route,Routes } from "react-router-dom"
 import UserPage from "./pages/UserPage"
 import PostPage from "./pages/PostPage"
 import Header from "./components/Header"
+import React from "react"
 
 function App() {
 
