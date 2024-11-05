@@ -10,6 +10,11 @@ const userSchema = mongoose.Schema({
         required: true,
         unique: true
     },
+    email: {
+        type: String,
+        required: true,
+        unique: true
+    },
     password:{
         type: String,
         minLength: 8,
@@ -35,6 +40,6 @@ const userSchema = mongoose.Schema({
     timestamps: true
 });
 
-const User = mongoose.model("User",Schema);
+const User = mongoose.model("User",userSchema);
 
 export default User;
