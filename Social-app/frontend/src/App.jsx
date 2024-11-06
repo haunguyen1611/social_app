@@ -4,15 +4,18 @@ import UserPage from "./pages/UserPage"
 import PostPage from "./pages/PostPage"
 import Header from "./components/Header"
 import React from "react"
-
+import HomePage from "./pages/HomePage"
+import AuthPage from "./pages/AuthPage"
 function App() {
 
   return (
     <Container maxW ="620px">
       <Header/>
       <Routes>
-        <Route path = "/:username" element = {<UserPage/>}></Route>
-        <Route path="/:username/post/:pid" element={<PostPage/>}></Route>
+        <Route path="/homepage" element = {<HomePage/>} />
+        <Route path="/auth" element = {<AuthPage/>} />
+        <Route path = "/:username" element = {<UserPage/>} />
+        <Route path="/:username/post/:pid" element={<PostPage/>} />
       </Routes>
     </Container>
   )
