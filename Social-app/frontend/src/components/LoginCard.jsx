@@ -25,12 +25,14 @@ import userAtom from "../atoms/userAtom.js";
     const [showPassword, setShowPassword] = useState(false);
     const setAuthScreen = useSetRecoilState(authScreenAtom);
     const setUser = useSetRecoilState(userAtom);
+    const [loading,setLoading] = useState(false);
     const [inputs,setInputs] = useState({
       username: "",
       password: "",
     });
     const showToast = useShowToast();
     const handdleLogin = async() =>{
+      setLoading(true);
       try {
         const res = await fetch("/api/users/login",{
           method : "POST",
@@ -44,11 +46,12 @@ import userAtom from "../atoms/userAtom.js";
           showToast("Error",data.error,"error");
           return;
         }
-        console.log(data)
         localStorage.setItem("user-threads",JSON.stringify(data));
         setUser(data)
       } catch (error) {
           showToast("Error", error,"error")
+      }finally{
+        setLoading(false)
       }
     }
     return (
@@ -99,7 +102,7 @@ import userAtom from "../atoms/userAtom.js";
               </FormControl>
               <Stack spacing={10} pt={2}>
                 <Button
-                  loadingText="Submitting"
+                  loadingText="Logging in"
                   size="lg"
                   bg={useColorModeValue("gray.600","gray.700")}
                   color={"white"}
@@ -107,6 +110,7 @@ import userAtom from "../atoms/userAtom.js";
                     bg: useColorModeValue("gray.700","gray.800"),
                   }}
                   onClick={handdleLogin}
+                  isLoading={loading}
                 >
                   Login
                 </Button>
