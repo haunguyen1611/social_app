@@ -1,34 +1,35 @@
-import { Flex,Image,Link,useColorMode } from "@chakra-ui/react";
+import { Flex, Image, Link, useColorMode } from "@chakra-ui/react";
 import userAtom from "../atoms/userAtom.js";
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { useRecoilValue } from "recoil";
-import {AiFillHome} from "react-icons/ai";
+import { AiFillHome } from "react-icons/ai";
 import { RxAvatar } from "react-icons/rx";
 
 const Header = () => {
-    const{colorMode,toggleColorMode}= useColorMode()
-    const user = useRecoilValue(userAtom);
+  const { colorMode, toggleColorMode } = useColorMode();
+  const user = useRecoilValue(userAtom);
   return (
     <Flex justifyContent={"space-between"} mt={6} mb={12}>
       {user && (
         <Link as={RouterLink} to="/">
-          <AiFillHome size={24}/>
+          <AiFillHome size={24} />
         </Link>
       )}
-        <Image cursor="{pointer}"
+      <Image
+        cursor="pointer"
         alt="logo"
         w={7}
-        src= {colorMode === "dark"? "/light-logo.svg" :"/dark-logo.svg"}
+        src={colorMode === "dark" ? "/light-logo.svg" : "/dark-logo.svg"}
         onClick={toggleColorMode}
-        />
-        {user && (
+      />
+      {user && (
         <Link as={RouterLink} to={`${user.username}`}>
-          <RxAvatar size={24}/>
+          <RxAvatar size={24} />
         </Link>
       )}
     </Flex>
-  )
-}
+  );
+};
 
-export default Header
+export default Header;

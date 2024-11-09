@@ -13,7 +13,7 @@ const UserHeader = ({ user }) => {
   const showToast = useShowToast();
   const currentUser = useRecoilValue(userAtom); // this is the user that logged in
   const [following, setFollowing] = useState(
-    user.followers.includes(currentUser._id)
+    user.followers.includes(currentUser?._id)
   );
   const [updating,setUpdating] = useState(false);  
   const copyURL = () => {
@@ -47,7 +47,7 @@ const UserHeader = ({ user }) => {
         user.followers.pop(); //simulate removing from followers
       } else {
         showToast("Success", `Followed ${user.username}`, "success");
-        user.followers.push(currentUser._id); //simulate adding to followers
+        user.followers.push(currentUser?._id); //simulate adding to followers
       }
       setFollowing(!following);
       console.log(data);
@@ -102,13 +102,13 @@ const UserHeader = ({ user }) => {
       </Flex>
       <Text>{user.bio}</Text>
 
-      {currentUser._id === user._id && (
+      {currentUser?._id === user._id && (
         <Link as={RouterLink} to="/update">
           <Button size={"sm"}>Update Profile</Button>
         </Link>
       )}
 
-      {currentUser._id !== user._id && (
+      {currentUser?._id !== user._id && (
         <Button size={"sm"} onClick={handdleFollowUnfollow} isLoading={updating}>
           {following ? "Unfollow" : "Follow"}
         </Button>
@@ -120,7 +120,7 @@ const UserHeader = ({ user }) => {
           <Box w="1" h="1" bg={"gray.light"} borderRadius={"full"}></Box>
           <Link color={"gray.light"}>instagram.com</Link>
         </Flex>
-        <Flex>
+        <Flex >
           <Box className="icon-container">
             <BsInstagram size={24} cursor={"pointer"} />
           </Box>
@@ -130,8 +130,8 @@ const UserHeader = ({ user }) => {
                 <CgMoreO size={24} cursor={"pointer"} />
               </MenuButton>
               <Portal>
-                <MenuList bg={"gray.dark"}>
-                  <MenuItem bg={"gray.dark"} onClick={copyURL}>
+                <MenuList bg={"gray"}>
+                  <MenuItem bg={"gray"} onClick={copyURL} >
                     Copy Link
                   </MenuItem>
                 </MenuList>

@@ -36,7 +36,7 @@ const CreatePost = () => {
   const imageRef = useRef(null);
   const [remainingChar, setRemainingChar] = useState(MAX_CHAR);
 
-  const [loading,setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const user = useRecoilValue(userAtom);
   const handleTextChange = (e) => {
@@ -55,27 +55,31 @@ const CreatePost = () => {
   const handleCreatePost = async () => {
     setLoading(true);
     try {
-        const res = await fetch("/api/posts/create", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ postedBy: user._id, text: postText, img: imgUrl }),
-          });
-      
-          const data = await res.json();
-          if (data.error) {
-            showToast("Error", data.error, "error");
-            return;
-          }
-          showToast("Success", "Post Created Successfully", "success");
-          onClose();
-          setPostText("");
-          setImgUrl("");
+      const res = await fetch("/api/posts/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          postedBy: user._id,
+          text: postText,
+          img: imgUrl,
+        }),
+      });
+
+      const data = await res.json();
+      if (data.error) {
+        showToast("Error", data.error, "error");
+        return;
+      }
+      showToast("Success", "Post Created Successfully", "success");
+      onClose();
+      setPostText("");
+      setImgUrl("");
     } catch (error) {
-        showToast("Error",error.message,"error");
-    } finally{
-        setLoading(false);
+      showToast("Error", error.message, "error");
+    } finally {
+      setLoading(false);
     }
   };
   return (
@@ -140,10 +144,14 @@ const CreatePost = () => {
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={handleCreatePost} isLoading={loading}>
+            <Button
+              colorScheme="blue"
+              mr={3}
+              onClick={handleCreatePost}
+              isLoading={loading}
+            >
               Post
             </Button>
-            <Button variant="ghost">Secondary Action</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
