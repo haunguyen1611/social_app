@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { Flex, Spinner} from "@chakra-ui/react";
 import useShowToast from '../hooks/useShowToast.js';
 import Post from '../components/Post.jsx';
+import { useRecoilState } from 'recoil';
+import postsAtom from '../atoms/postsAtom.js';
 
 const HomePage = () => {
-  const [posts,setPosts] = useState([])
+  const [posts,setPosts] = useRecoilState(postsAtom)
   const [loading,setLoading] = useState(false);
   const showToast = useShowToast();
   useEffect(() =>{
@@ -25,7 +27,7 @@ const HomePage = () => {
       }
     }
     getFeedPost();
-  },[showToast])
+  },[showToast,setPosts])
   return (
     <>
       {!loading && posts.length === 0 && <h1>Follow some users to see new feed</h1>}

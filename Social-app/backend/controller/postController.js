@@ -1,12 +1,12 @@
 import User from "../models/userModel.js";
 import Post from "../models/postModel.js";
-import {v2 as cloudinary} from "cloudinary";
+import { v2 as cloudinary } from "cloudinary";
 
 // Create Post
 const createPost = async (req, res) => {
   try {
     const { postedBy, text } = req.body;
-    let {img} = req.body;
+    let { img } = req.body;
     if (!postedBy || !text) {
       return res
         .status(400)
@@ -29,7 +29,7 @@ const createPost = async (req, res) => {
         .json({ error: `Text must be less than ${maxLength} characters` });
     }
 
-    if(img){
+    if (img) {
       const uploadResponse = await cloudinary.uploader.upload(img);
       img = uploadResponse.secure_url;
     }
@@ -37,7 +37,7 @@ const createPost = async (req, res) => {
     const newPost = new Post({ postedBy, text, img });
     await newPost.save();
 
-    res.status(201).json({ message: "Post created successfully", newPost });
+    res.status(201).json(newPost);
   } catch (error) {
     res.status(500).json({ error: error.message });
     console.log("Error in createPost ", error.message);
@@ -70,7 +70,7 @@ const deletePost = async (req, res) => {
       return res.status(401).json({ error: "Unauthorized to delete post" });
     }
 
-    if(post.img) {
+    if (post.img) {
       const imgId = post.img.split("/").pop().split(".")[0];
       await cloudinary.uploader.destroy(imgId);
     }
@@ -117,11 +117,12 @@ const likeUnlikePost = async (req, res) => {
 // Reply Post
 const replyPost = async (req, res) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ error: "User not authenticated" });
+    }
     const { text } = req.body;
     const postId = req.params.id;
-    const userId = req.user._id;
-    const userProfilePic = req.user.userProfilePic;
-    const username = req.user.username;
+    const { _id: userId, profilePic: userProfilePic, username } = req.user;
 
     if (!text) {
       return res.status(400).json({ error: "Text field is required" });
@@ -137,7 +138,7 @@ const replyPost = async (req, res) => {
     post.replies.push(reply);
     await post.save();
 
-    res.status(200).json({ message: "Reply added successfully", post });
+    res.status(200).json({ reply });
   } catch (error) {
     res.status(500).json({ error: error.message });
     console.log("Error in replyPost ", error.message);
@@ -167,19 +168,21 @@ const getFeedPost = async (req, res) => {
 };
 
 // Get UserPosts
-const getUserPosts = async(req,res) =>{
-  const {username} = req.params;
+const getUserPosts = async (req, res) => {
+  const { username } = req.params;
   try {
-    const user = await User.findOne({username});
-    if(!user){
-      return res.status(404).json({error: "User not found"});
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
     }
-    const posts = await Post.find({ postedBy: user._id}).sort({ createdAt: -1 });
+    const posts = await Post.find({ postedBy: user._id }).sort({
+      createdAt: -1,
+    });
     res.status(200).json(posts);
   } catch (error) {
-    res.status(500).json({error: error.message});
+    res.status(500).json({ error: error.message });
   }
-}
+};
 export {
   createPost,
   getPost,
