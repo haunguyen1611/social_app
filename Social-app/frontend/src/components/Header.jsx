@@ -6,7 +6,8 @@ import { useRecoilValue } from "recoil";
 import { AiFillHome } from "react-icons/ai";
 import { RxAvatar } from "react-icons/rx";
 import { FiLogOut } from "react-icons/fi";
-import useLogOut from "../hooks/useLogOut.js";
+import useLogOut from "../hooks/useLogout.js";
+import { FaRegMessage } from "react-icons/fa6";
 // import authScreenAtom from "../atoms/authAtom.js";
 
 const Header = () => {
@@ -34,6 +35,9 @@ const Header = () => {
           <Link as={RouterLink} to={`${user.username}`}>
             <RxAvatar size={24} />
           </Link>
+          <Link as={RouterLink} to={`/chat`}>
+            <FaRegMessage size={18} />
+					</Link>
           <Button size={"xs"} onClick={logout}>
             <FiLogOut size={20} />
           </Button>
