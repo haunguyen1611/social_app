@@ -16,11 +16,11 @@ const UserPage = () => {
 
   useEffect(() => {
     const getPost = async () => {
+      if (!user) return;
       setFetchingPosts(true);
       try {
         const res = await fetch(`/api/posts/user/${username}`);
         const data = await res.json();
-        console.log(data);
         setPosts(data);
       } catch (error) {
         showToast("Error", error.message, "error");
@@ -30,8 +30,12 @@ const UserPage = () => {
       }
     };
 
-    getPost();
-  }, [username, showToast, setPosts]);
+    // Chỉ gọi lại API khi có sự thay đổi trong `user`
+    if (user) {
+      getPost();
+    }
+  }, [username, showToast, setPosts, user]);
+  
   if (!user && loading) {
     return (
       <Flex justifyContent="center">

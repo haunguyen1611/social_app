@@ -25,6 +25,7 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import userAtom from "../atoms/userAtom.js";
 import useShowToast from "../hooks/useShowToast.js";
 import postsAtom from "../atoms/postsAtom.js";
+import { useParams } from "react-router-dom";
 
 const MAX_CHAR = 500;
 
@@ -39,6 +40,7 @@ const CreatePost = () => {
   const [remainingChar, setRemainingChar] = useState(MAX_CHAR);
 
   const [loading, setLoading] = useState(false);
+  const {username} = useParams();
 
   const user = useRecoilValue(userAtom);
   const handleTextChange = (e) => {
@@ -75,7 +77,11 @@ const CreatePost = () => {
         return;
       }
       showToast("Success", "Post Created Successfully", "success");
-      setPosts([data, ...posts])
+
+      if(username === user.username){
+        setPosts([data, ...posts])
+      }
+
       onClose();
       setPostText("");
       setImgUrl("");

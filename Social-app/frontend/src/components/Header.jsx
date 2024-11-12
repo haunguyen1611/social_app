@@ -6,17 +6,22 @@ import { useRecoilValue } from "recoil";
 import { AiFillHome } from "react-icons/ai";
 import { RxAvatar } from "react-icons/rx";
 import { FiLogOut } from "react-icons/fi";
+import useLogOut from "../hooks/useLogOut.js";
+// import authScreenAtom from "../atoms/authAtom.js";
 
 const Header = () => {
   const { colorMode, toggleColorMode } = useColorMode();
   const user = useRecoilValue(userAtom);
+  const logout = useLogOut();
+  // const setAuthScreen = useRecoilState(authScreenAtom);
   return (
-    <Flex justifyContent={"space-between"} mt={6} mb={12}>
+    <Flex justifyContent={user ? "space-between" : "center"} mt={6} mb={12}>
       {user && (
         <Link as={RouterLink} to="/">
           <AiFillHome size={24} />
         </Link>
       )}
+
       <Image
         cursor="pointer"
         alt="logo"
@@ -29,16 +34,12 @@ const Header = () => {
           <Link as={RouterLink} to={`${user.username}`}>
             <RxAvatar size={24} />
           </Link>
-          <Button
-            position={"fixed"}
-            top={"30px"}
-            right={"30px"}
-            size={"xs"}
-          >
+          <Button size={"xs"} onClick={logout}>
             <FiLogOut size={20} />
           </Button>
         </Flex>
       )}
+      
     </Flex>
   );
 };
