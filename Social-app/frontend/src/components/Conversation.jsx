@@ -7,16 +7,21 @@ import {
   WrapItem,
   Text,
   Image,
+  useColorMode,
 } from "@chakra-ui/react";
 import userAtom from "../atoms/userAtom.js";
 import React from "react";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { BsCheck2All } from "react-icons/bs";
+import { selectedConversationAtom } from "../atoms/messageAtom.js";
 
-const Conversation = ({ conversation }) => {
+const Conversation = ({ conversation, isOnline }) => {
   const user = conversation.participants[0];
   const currentUser = useRecoilValue(userAtom);
   const lastMessage = conversation.lastMessage;
+  const [selectedConversation, setSelectedConversation] = useRecoilState(selectedConversationAtom);
+  const {colorMode} = useColorMode();
+  
   return (
     <Flex
       gap={4}
@@ -27,6 +32,14 @@ const Conversation = ({ conversation }) => {
         bg: useColorModeValue("gray.600", "gray.dark"),
         color: "white",
       }}
+      onClick={() => setSelectedConversation({
+        _id: conversation._id,
+        userId: user._id,
+        userProfilePic: user.profilePic,
+        username: user.username,
+        mock: conversation.mock,
+      })}
+      bg ={selectedConversation?._id === conversation._id ? (colorMode === "light" ? "gray.400" : "gray.dark"): ""}
       borderRadius={"md"}
     >
       <WrapItem>
@@ -38,7 +51,7 @@ const Conversation = ({ conversation }) => {
           }}
           src={user.profilePic}
         >
-          <AvatarBadge boxSize="1em" bg="green.500" />
+          {isOnline && <AvatarBadge boxSize="1em" bg="green.500" />}
         </Avatar>
       </WrapItem>
 

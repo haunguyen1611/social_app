@@ -13,7 +13,6 @@ import CreatePost from "./components/CreatePost";
 import ChatPage from "./pages/ChatPage";
 function App() {
   const user = useRecoilValue(userAtom);
-  console.log(user);
   return (
     <Box position={"relative"} w="full">
     <Container maxW="620px">
