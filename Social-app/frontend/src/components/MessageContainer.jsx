@@ -39,7 +39,7 @@ const MessageContainer = () => {
       setMessages((prevMessages) => [...prevMessages, message]);
 
       }
-
+      // Cập nhật lastMessage cho tất cả các cuộc hội thoại của client
       setConversations((prev) => {
         const updatedConversations = prev.map((conversation) => {
           if (conversation._id === message.conversationId) {
@@ -59,10 +59,40 @@ const MessageContainer = () => {
     return () => socket.off("newMessage");
   }, [selectedConversation, setConversations, socket]);
 
+  
+  useEffect(() => {
+		const lastMessageIsFromOtherUser = messages.length && messages[messages.length - 1].sender !== currentUser._id;
+		if (lastMessageIsFromOtherUser) {
+			socket.emit("markMessagesAsSeen", {
+				conversationId: selectedConversation._id,
+				userId: selectedConversation.userId,
+			});
+		}
+
+		socket.on("messagesSeen", ({ conversationId }) => {
+			if (selectedConversation._id === conversationId) {
+				setMessages((prev) => {
+					const updatedMessages = prev.map((message) => {
+						if (!message.seen) {
+							return {
+								...message,
+								seen: true,
+							};
+						}
+						return message;
+					});
+					return updatedMessages;
+				});
+			}
+		});
+	}, [socket, currentUser._id, messages, selectedConversation]);
+
+  // Scroll Tin nhhắn
   useEffect(() =>{
     messageEndRef.current?.scrollIntoView({behavior: "smooth"});
   },[messages])
 
+  // Hiển thị tin nhắn
   useEffect(() => {
     const getMessages = async () => {
       setLoadingMessages(true);
@@ -97,8 +127,8 @@ const MessageContainer = () => {
         <Avatar src={selectedConversation.userProfilePic} size={"sm"} />
         <Text display={"flex"} alignItems={"center"}>
           {selectedConversation.username}{" "}
-          <Image src="/verified.png" w={4} h={4} ml={1} />
         </Text>
+        <Image src="/verified.png" w={4} h={4} ml={1} />
       </Flex>
       <Divider />
       {/* Message */}

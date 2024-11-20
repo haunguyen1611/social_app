@@ -15,62 +15,95 @@ import React, { useEffect, useState } from "react";
 import MessageContainer from "../components/MessageContainer";
 import useShowToast from "../hooks/useShowToast.js";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { conversationsAtom, selectedConversationAtom } from "../atoms/messageAtom.js";
+import {
+  conversationsAtom,
+  selectedConversationAtom,
+} from "../atoms/messageAtom.js";
 import userAtom from "../atoms/userAtom";
 import { useSocket } from "../context/SocketContext";
 
 const ChatPage = () => {
-
-  const showToast = useShowToast()
-  const [loadingConversations,setLoadingConversations] = useState(true); 
-  const [conversations,setConversations] = useRecoilState(conversationsAtom);
-  const [selectedConversation, setSelectedConversation] = useRecoilState(selectedConversationAtom);
+  const showToast = useShowToast();
+  const [loadingConversations, setLoadingConversations] = useState(true);
+  const [conversations, setConversations] = useRecoilState(conversationsAtom);
+  const [selectedConversation, setSelectedConversation] = useRecoilState(
+    selectedConversationAtom
+  );
   const [searchText, setSearchText] = useState("");
   const [searchingUser, setSearchingUser] = useState(false);
   const currentUser = useRecoilValue(userAtom);
-  const {socket,onlineUsers} = useSocket(); 
+  const { socket, onlineUsers } = useSocket();
+
   useEffect(() => {
-    const getConversations = async () =>{
-      try {
-          const res = await fetch("/api/messages/conversations");
-          const data = await res.json();
-          if(data.error){
-            showToast("Error",data.error,"error");
-            return;
+    socket?.on("messagesSeen", ({ conversationId }) => {
+      setConversations((prev) => {
+        const updatedConversations = prev.map((conversation) => {
+          if (conversation._Id === conversationId) {
+            return {
+              ...conversation,
+              lastMessage: {
+                ...conversation.lastMessage,
+                seen: true,
+              },
+            };
           }
-          console.log(data)
-          setConversations(data);
+          return conversation;
+        });
+        return updatedConversations;
+      });
+    });
+  }, [socket, setConversations]);
+  
+  // Hiển thị cuộc hội thoại giữa các client
+  useEffect(() => {
+    const getConversations = async () => {
+      try {
+        const res = await fetch("/api/messages/conversations");
+        const data = await res.json();
+        if (data.error) {
+          showToast("Error", data.error, "error");
+          return;
+        }
+        setConversations(data);
       } catch (error) {
-          showToast("Error",error.message,"error");
-      } finally{
+        showToast("Error", error.message, "error");
+      } finally {
         setLoadingConversations(false);
       }
-    }
+    };
     getConversations();
-  },[setConversations,showToast]);
+  }, [setConversations, showToast]);
 
-  const handleConversationSearch = async (e) =>{
+  const handleConversationSearch = async (e) => {
     e.preventDefault();
     setSearchingUser(true);
     try {
-      const res = await fetch(`/api/users/profile/${searchText}`)
+      const res = await fetch(`/api/users/profile/${searchText}`);
       const searchedUser = await res.json();
-      if(searchedUser.error){
-        showToast("Error",searchedUser.error,"error");
+      if (searchedUser.error) {
+        showToast("Error", searchedUser.error, "error");
         return;
       }
 
-      // user is trying to message themselves 
-      if(searchedUser._id === currentUser._id){
-        showToast("Error","You can't message yourself","error");
+      // user is trying to message themselves
+      if (searchedUser._id === currentUser._id) {
+        showToast("Error", "You can't message yourself", "error");
         return;
       }
 
       // user and the searchedUser have a conversation before
-      if(conversations.find(conversation => conversation.participants[0]._id === searchedUser._id)){
+      if (
+        conversations.find(
+          (conversation) =>
+            conversation.participants[0]._id === searchedUser._id
+        )
+      ) {
         setSelectedConversation({
-          _id: conversations.find(conversation => conversation.participants[0]._id === searchedUser._id)._id,
-          userId : searchedUser._id,
+          _id: conversations.find(
+            (conversation) =>
+              conversation.participants[0]._id === searchedUser._id
+          )._id,
+          userId: searchedUser._id,
           username: searchedUser.username,
           userProfilePic: searchedUser.profilePic,
           mock: false,
@@ -87,19 +120,19 @@ const ChatPage = () => {
         _id: Date.now(),
         participants: [
           {
-            _id : searchedUser._id,
+            _id: searchedUser._id,
             username: searchedUser.username,
             profilePic: searchedUser.profilePic,
-          }
+          },
         ],
       };
-      setConversations((prevConvs) => [...prevConvs, mockConversation])
+      setConversations((prevConvs) => [...prevConvs, mockConversation]);
     } catch (error) {
-      showToast("Error",error.message,"error");
-    } finally{
+      showToast("Error", error.message, "error");
+    } finally {
       setSearchingUser(false);
     }
-  }
+  };
   return (
     <Box
       position={"absolute"}
@@ -135,14 +168,21 @@ const ChatPage = () => {
           </Text>
           <form onSubmit={handleConversationSearch}>
             <Flex alignItems={"center"} gap={2}>
-              <Input placeholder="Search" onChange={(e) => setSearchText(e.target.value)}/>
-              <Button size={"sm"} onClick={handleConversationSearch} isLoading={searchingUser}>
+              <Input
+                placeholder="Search"
+                onChange={(e) => setSearchText(e.target.value)}
+              />
+              <Button
+                size={"sm"}
+                onClick={handleConversationSearch}
+                isLoading={searchingUser}
+              >
                 <SearchIcon />
               </Button>
             </Flex>
           </form>
-          {
-            loadingConversations && [0, 1, 2, 3, 4].map((_, i) => (
+          {loadingConversations &&
+            [0, 1, 2, 3, 4].map((_, i) => (
               <Flex
                 key={i}
                 gap={4}
@@ -157,34 +197,35 @@ const ChatPage = () => {
                 <Skeleton h={"10px"} w={"80px"} />
                 <Skeleton h={"8px"} w={"90%"} />
               </Flex>
-            ))
-          }
+            ))}
 
-          {!loadingConversations && (
-            conversations.map(conversation => (
-              <Conversation key={conversation._id}
-              isOnline = {onlineUsers.includes(conversation.participants[0]._id)}
-              conversation={conversation}/>
-            ))
-          )}
+          {!loadingConversations &&
+            conversations.map((conversation) => (
+              <Conversation
+                key={conversation._id}
+                isOnline={onlineUsers.includes(
+                  conversation.participants[0]._id
+                )}
+                conversation={conversation}
+              />
+            ))}
         </Flex>
         {!selectedConversation._id && (
-        <Flex
-          flex={70}
-          borderRadius={"md"}
-          p={2}
-          flexDir={"column"}
-          alignItems={"center"}
-          justifyContent={"center"}
-          height={"400px"}
-        >
-          <SiTheconversation size={100} />
-          <Text fontSize={20}>Select a conversation</Text>
-        </Flex>
+          <Flex
+            flex={70}
+            borderRadius={"md"}
+            p={2}
+            flexDir={"column"}
+            alignItems={"center"}
+            justifyContent={"center"}
+            height={"400px"}
+          >
+            <SiTheconversation size={100} />
+            <Text fontSize={20}>Select a conversation</Text>
+          </Flex>
         )}
 
-        {selectedConversation._id && <MessageContainer/>}
-
+        {selectedConversation._id && <MessageContainer />}
       </Flex>
     </Box>
   );

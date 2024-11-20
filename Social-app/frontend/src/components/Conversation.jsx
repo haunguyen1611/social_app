@@ -8,6 +8,7 @@ import {
   Text,
   Image,
   useColorMode,
+  Box,
 } from "@chakra-ui/react";
 import userAtom from "../atoms/userAtom.js";
 import React from "react";
@@ -61,7 +62,7 @@ const Conversation = ({ conversation, isOnline }) => {
         </Text>
         <Text fontSize={"xs"} display={"flex"} alignItems={"center"} gap={1}>
           {currentUser._id === lastMessage.sender ? (
-            <BsCheck2All size={16} />
+            <Box > <BsCheck2All size={16} /> </Box>
           ) : (
             ""
           )}
