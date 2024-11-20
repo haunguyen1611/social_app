@@ -13,7 +13,7 @@ import {
 import userAtom from "../atoms/userAtom.js";
 import React from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { BsCheck2All } from "react-icons/bs";
+import { BsCheck2All, BsFillImageFill } from "react-icons/bs";
 import { selectedConversationAtom } from "../atoms/messageAtom.js";
 
 const Conversation = ({ conversation, isOnline }) => {
@@ -68,7 +68,7 @@ const Conversation = ({ conversation, isOnline }) => {
           )}
           {lastMessage.text.length > 18
             ? lastMessage.text.substring(0, 18) + "..."
-            : lastMessage.text}
+            : lastMessage.text || <BsFillImageFill size={16}/>}
         </Text>
       </Stack>
     </Flex>
