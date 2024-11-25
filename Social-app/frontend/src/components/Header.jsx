@@ -8,6 +8,7 @@ import { RxAvatar } from "react-icons/rx";
 import { FiLogOut } from "react-icons/fi";
 import useLogOut from "../hooks/useLogout.js";
 import { FaRegMessage } from "react-icons/fa6";
+import SearchUser from "../components/SearchUserInput";
 // import authScreenAtom from "../atoms/authAtom.js";
 
 const Header = () => {
@@ -18,11 +19,15 @@ const Header = () => {
   return (
     <Flex justifyContent={user ? "space-between" : "center"} mt={6} mb={12}>
       {user && (
-        <Link as={RouterLink} to="/">
-          <AiFillHome size={24} />
-        </Link>
+      <Flex gap={3} alignItems="center">
+        {user && (
+          <Link as={RouterLink} to="/">
+            <AiFillHome size={24} />
+          </Link>
+        )}
+        <SearchUser />
+      </Flex>
       )}
-
       <Image
         cursor="pointer"
         alt="logo"

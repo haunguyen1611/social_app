@@ -3,19 +3,17 @@ import { Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
 import { Portal } from "@chakra-ui/react";
 import { Avatar } from "@chakra-ui/react";
 import userAtom from "../atoms/userAtom.js";
-import React, { useState } from "react";
+import React from "react";
 import { BsInstagram } from "react-icons/bs";
 import { CgMoreO } from "react-icons/cg";
 import { useRecoilValue } from "recoil";
 import { Link as RouterLink } from "react-router-dom";
 import useShowToast from "../hooks/useShowToast.js";
+import useFollowUnfollow from "../hooks/useFollowUnfollow.js";
 const UserHeader = ({ user }) => {
   const showToast = useShowToast();
   const currentUser = useRecoilValue(userAtom); // this is the user that logged in
-  const [following, setFollowing] = useState(
-    user.followers.includes(currentUser?._id)
-  );
-  const [updating,setUpdating] = useState(false);  
+  const { handdleFollowUnfollow,updating,following} =useFollowUnfollow(user);
   const copyURL = () => {
     const currenURL = window.location.href;
     navigator.clipboard.writeText(currenURL).then(() => {
@@ -23,40 +21,7 @@ const UserHeader = ({ user }) => {
     });
   };
 
-  const handdleFollowUnfollow = async () => {
-    if(!currentUser){
-      showToast("Error","Please login to follow","error");
-      return;
-    }
-    if(updating) return;
-    setUpdating(true);
-    try {
-      const res = await fetch(`/api/users/follow/${user._id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const data = await res.json();
-      if (data.error) {
-        showToast("Error", data.error, "error");
-        return;
-      }
-      if (following) {
-        showToast("Success", `Unfollowed ${user.username}`, "success");
-        user.followers.pop(); //simulate removing from followers
-      } else {
-        showToast("Success", `Followed ${user.username}`, "success");
-        user.followers.push(currentUser?._id); //simulate adding to followers
-      }
-      setFollowing(!following);
-      console.log(data);
-    } catch (error) {
-      showToast("Error", error.message, "error");
-    } finally{
-      setUpdating(false);
-    }
-  };
+  
   return (
     <VStack gap={4} alignItems={"start"}>
       <Flex justifyContent={"space-between"} w={"full"}>

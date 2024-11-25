@@ -47,7 +47,12 @@ const HomePage = () => {
           <Post key={post._id} post={post} postedBy={post.postedBy} />
         ))}
       </Box>
-      <Box flex={30}><SuggestedUsers/></Box>
+      <Box flex={30}
+          display={{
+            base: "none",
+            md: "block",
+          }}
+      ><SuggestedUsers/></Box>
     </Flex>
   );
 };

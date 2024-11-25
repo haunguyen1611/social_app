@@ -4,12 +4,16 @@ import React from "react";
 import { useSetRecoilState } from "recoil";
 import useShowToast from "../hooks/useShowToast.js";
 import { FiLogOut } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 const LogoutButton = () => {
   const showToast = useShowToast();
   const setUser = useSetRecoilState(userAtom);
+  const navigate = useNavigate();
   const handdleLogout = async () => {
     try {
+      // Xóa dữ liệu cục bộ
       localStorage.removeItem("user-threads");
+      // Gửi yêu cầu logout tới server
       const res = await fetch("/api/users/logout", {
         method: "POST",
         headers: {
@@ -17,17 +21,20 @@ const LogoutButton = () => {
         },
       });
       const data = await res.json();
-      console.log(data);
+      // Xử lý lỗi từ server
       if (data.error) {
         showToast("Error", data.error, "error");
         return;
       }
-      localStorage.removeItem("user-threads");
+      // Xóa thông tin user và điều hướng đến trang /auth
       setUser(null);
+      navigate("/auth");
     } catch (error) {
-      showToast("Error", error, "error");
+      // Xử lý lỗi cục bộ
+      showToast("Error", error.message || "Logout failed", "error");
     }
   };
+
   return (
     <Button
       position={"fixed"}

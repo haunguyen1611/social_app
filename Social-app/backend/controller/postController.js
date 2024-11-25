@@ -154,9 +154,11 @@ const getFeedPost = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
+    // Danh sách người dùng đang theo dõi
     const following = user.following;
 
-    const feedPosts = await Post.find({ postedBy: { $in: following } }).sort({
+    const allUserToFetch = [...following,userId]
+    const feedPosts = await Post.find({ postedBy: { $in: allUserToFetch } }).sort({
       createdAt: -1,
     });
 
