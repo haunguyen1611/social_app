@@ -22,83 +22,102 @@ import { useSocket } from "../context/SocketContext";
 
 const MessageContainer = () => {
   const showToast = useShowToast();
-  const selectedConversation = useRecoilValue(
-    selectedConversationAtom
-  );
+  const selectedConversation = useRecoilValue(selectedConversationAtom);
   const [loadingMessages, setLoadingMessages] = useState(true);
   const [messages, setMessages] = useState([]);
   const currentUser = useRecoilValue(userAtom);
   const { socket } = useSocket();
   const [, setConversations] = useRecoilState(conversationsAtom);
-  const messageEndRef = useRef(null)
+  const messageEndRef = useRef(null);
 
-  useEffect(() => {
-    socket.on("newMessage", (message) => {
-      
-      if(selectedConversation._id === message.conversationId){
+useEffect(() => {
+  socket.on("newMessage", (message) => {
+    // Chỉ thêm tin nhắn mới vào hội thoại hiện tại
+    if (selectedConversation._id === message.conversationId) {
       setMessages((prevMessages) => [...prevMessages, message]);
+    }
 
-      }
-      // Cập nhật lastMessage cho tất cả các cuộc hội thoại của client
-      setConversations((prev) => {
-        const updatedConversations = prev.map((conversation) => {
-          if (conversation._id === message.conversationId) {
-            return {
-              ...conversation,
-              lastMessage: {
-                text: message.text,
-                sender: message.sender,
-              },
-            };
-          }
-          return conversation;
-        });
-        return updatedConversations;
+    // Cập nhật lastMessage cho các hội thoại
+    setConversations((prevConvs) => {
+      const updatedConversations = prevConvs.map((conv) => {
+        if (conv._id === message.conversationId) {
+          return {
+            ...conv,
+            lastMessage: {
+              text: message.text,
+              sender: message.sender,
+            },
+          };
+        }
+        return conv;
       });
+      return updatedConversations;
     });
-    return () => socket.off("newMessage");
-  }, [selectedConversation, setConversations, socket]);
+  });
 
-  
+  // Dọn sạch event listener khi component bị huỷ
+  return () => socket.off("newMessage");
+}, [selectedConversation, setConversations, socket]);
+
   useEffect(() => {
-		const lastMessageIsFromOtherUser = messages.length && messages[messages.length - 1].sender !== currentUser._id;
-		if (lastMessageIsFromOtherUser) {
-			socket.emit("markMessagesAsSeen", {
-				conversationId: selectedConversation._id,
-				userId: selectedConversation.userId,
-			});
-		}
+    const lastMessageIsFromOtherUser =
+      messages.length && messages[messages.length - 1].sender !== currentUser._id;
+    if (lastMessageIsFromOtherUser) {
+      socket.emit("markMessagesAsSeen", {
+        conversationId: selectedConversation._id,
+        userId: selectedConversation.userId,
+      });
+    }
 
-		socket.on("messagesSeen", ({ conversationId }) => {
-			if (selectedConversation._id === conversationId) {
-				setMessages((prev) => {
-					const updatedMessages = prev.map((message) => {
-						if (!message.seen) {
-							return {
-								...message,
-								seen: true,
-							};
-						}
-						return message;
-					});
-					return updatedMessages;
-				});
-			}
-		});
-	}, [socket, currentUser._id, messages, selectedConversation]);
+    socket.on("messagesSeen", ({ conversationId }) => {
+      if (selectedConversation._id === conversationId) {
+        setMessages((prev) => {
+          const updatedMessages = prev.map((message) => {
+            if (!message.seen) {
+              return {
+                ...message,
+                seen: true,
+              };
+            }
+            return message;
+          });
+          return updatedMessages;
+        });
+      }
+    });
+  }, [socket, currentUser._id, messages, selectedConversation]);
 
-  // Scroll Tin nhhắn
-  useEffect(() =>{
-    messageEndRef.current?.scrollIntoView({behavior: "smooth"});
-  },[messages])
+  useEffect(() => {
+    messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
-  // Hiển thị tin nhắn
   useEffect(() => {
     const getMessages = async () => {
       setLoadingMessages(true);
       setMessages([]);
       try {
-        if (selectedConversation.mock) return;
+        if (selectedConversation.mock) {
+          // Mock data for the conversation
+          setMessages([
+            {
+              _id: "1",
+              text: "Hello! This is a mock conversation.",
+              sender: selectedConversation.userId,
+              createdAt: new Date().toISOString(),
+              seen: true,
+            },
+            {
+              _id: "2",
+              text: "Feel free to send a message!",
+              sender: currentUser._id,
+              createdAt: new Date().toISOString(),
+              seen: true,
+            },
+          ]);
+          setLoadingMessages(false);
+          return;
+        }
+
         const res = await fetch(`/api/messages/${selectedConversation.userId}`);
         const data = await res.json();
         if (data.error) {
@@ -113,7 +132,8 @@ const MessageContainer = () => {
       }
     };
     getMessages();
-  }, [showToast, selectedConversation.userId, selectedConversation.mock]);
+  }, [showToast, selectedConversation, currentUser._id]);
+
   return (
     <Flex
       flex={70}
@@ -126,7 +146,7 @@ const MessageContainer = () => {
       <Flex w={"full"} h={12} alignItems={"center"} gap={2}>
         <Avatar src={selectedConversation.userProfilePic} size={"sm"} />
         <Text display={"flex"} alignItems={"center"}>
-          {selectedConversation.username}{" "}
+          {selectedConversation.username} {" "}
         </Text>
         <Image src="/verified.png" w={4} h={4} ml={1} />
       </Flex>
@@ -148,9 +168,9 @@ const MessageContainer = () => {
               alignItems={"center"}
               p={2}
               borderRadius={"md"}
-              alignSelf={i % 2 == 0 ? "flex-start" : "flex-end"}
+              alignSelf={i % 2 === 0 ? "flex-start" : "flex-end"}
             >
-              {i % 2 == 0 && <SkeletonCircle size="7" />}
+              {i % 2 === 0 && <SkeletonCircle size="7" />}
               <Flex flexDir={"column"} gap={2}>
                 <Skeleton h="8px" w={"250px"} />
                 <Skeleton h="8px" w={"250px"} />
@@ -161,14 +181,19 @@ const MessageContainer = () => {
 
         {!loadingMessages &&
           messages.map((message) => (
-            <Flex key={message._id}
+            <Flex
+              key={message._id}
               direction={"column"}
-              ref={messages.length -1 === messages.indexOf(message) ? messageEndRef : null}
+              ref={
+                messages.length - 1 === messages.indexOf(message)
+                  ? messageEndRef
+                  : null
+              }
             >
-            <Message
-              message={message}
-              ownMessage={currentUser._id === message.sender}
-            />
+              <Message
+                message={message}
+                ownMessage={currentUser._id === message.sender}
+              />
             </Flex>
           ))}
       </Flex>

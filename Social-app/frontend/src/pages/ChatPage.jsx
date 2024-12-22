@@ -53,7 +53,7 @@ const ChatPage = () => {
       });
     });
   }, [socket, setConversations]);
-  
+
   // Hiển thị cuộc hội thoại giữa các client
   useEffect(() => {
     const getConversations = async () => {

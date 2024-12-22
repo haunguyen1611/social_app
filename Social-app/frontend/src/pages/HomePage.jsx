@@ -5,6 +5,7 @@ import Post from "../components/Post.jsx";
 import { useRecoilState } from "recoil";
 import postsAtom from "../atoms/postsAtom.js";
 import SuggestedUsers from "../components/SuggestedUsers";
+import CreatePost from "../components/CreatePost.jsx";
 
 const HomePage = () => {
   const [posts, setPosts] = useRecoilState(postsAtom);
@@ -53,6 +54,7 @@ const HomePage = () => {
             md: "block",
           }}
       ><SuggestedUsers/></Box>
+      <CreatePost/>
     </Flex>
   );
 };

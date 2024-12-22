@@ -28,8 +28,7 @@ const MessageInput = ({ setMessages }) => {
   const showToast = useShowToast();
   const [messageText, setMessageText] = useState("");
   const selectedConversation = useRecoilValue(selectedConversationAtom);
-  // eslint-disable-next-line no-unused-vars
-  const [conversations, setConversations] = useRecoilState(conversationsAtom);
+  const [, setConversations] = useRecoilState(conversationsAtom);
   const imageRef = useRef(null);
   const { onClose } = useDisclosure();
   const { handleImageChange, imgUrl, setImgUrl } = usePreviewImg();
@@ -42,6 +41,35 @@ const MessageInput = ({ setMessages }) => {
 
     setIsSending(true);
     try {
+      // Tạo tin nhắn mới (mock dữ liệu trước khi gửi tới server)
+      const newMessage = {
+        _id: Date.now(),
+        conversationId: selectedConversation._id,
+        text: messageText,
+        img: imgUrl || null,
+        sender: selectedConversation.userId, // Hoặc current user ID nếu cần
+        createdAt: new Date().toISOString(),
+      };
+
+      // Thêm tin nhắn vào danh sách hiện tại
+      setMessages((prev) => [...prev, newMessage]);
+
+      // Cập nhật lastMessage trong danh sách hội thoại
+      setConversations((prevConvs) =>
+        prevConvs.map((conv) =>
+          conv._id === selectedConversation._id
+            ? {
+                ...conv,
+                lastMessage: {
+                  text: messageText,
+                  sender: newMessage.sender,
+                },
+              }
+            : conv
+        )
+      );
+
+      // Gửi tin nhắn tới server
       const res = await fetch("/api/messages", {
         method: "POST",
         headers: {
@@ -53,40 +81,29 @@ const MessageInput = ({ setMessages }) => {
           img: imgUrl,
         }),
       });
+
       const data = await res.json();
       if (data.error) {
         showToast("Error", data.error, "error");
         return;
       }
-      // console.log(data);
-      setMessages((messages) => [...messages, data]);
 
-      setConversations((prevConvs) => {
-        const updatedConversations = prevConvs.map((conversation) => {
-          if (conversation._id === selectedConversation._id) {
-            return {
-              ...conversation,
-              lastMessage: {
-                text: messageText,
-                sender: data.sender,
-              },
-            };
-          }
-          return conversation;
-        });
-        return updatedConversations;
-      });
+      // Cập nhật message bằng dữ liệu từ server
+      setMessages((prev) =>
+        prev.map((msg) => (msg._id === newMessage._id ? data : msg))
+      );
 
+      // Xóa dữ liệu sau khi gửi xong
       setMessageText("");
       setImgUrl("");
       onClose();
-
     } catch (error) {
       showToast("Error", error.message, "error");
     } finally {
       setIsSending(false);
     }
   };
+
   return (
     <Flex gap={2} alignItems={"center"}>
       <form onSubmit={handleSendMessage} style={{ flex: 95 }}>

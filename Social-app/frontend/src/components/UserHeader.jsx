@@ -10,6 +10,7 @@ import { useRecoilValue } from "recoil";
 import { Link as RouterLink } from "react-router-dom";
 import useShowToast from "../hooks/useShowToast.js";
 import useFollowUnfollow from "../hooks/useFollowUnfollow.js";
+import MessageButton from "../components/MessageButton.jsx";
 const UserHeader = ({ user }) => {
   const showToast = useShowToast();
   const currentUser = useRecoilValue(userAtom); // this is the user that logged in
@@ -67,6 +68,7 @@ const UserHeader = ({ user }) => {
       </Flex>
       <Text>{user.bio}</Text>
 
+      <Flex flexDirection={"row"}>
       {currentUser?._id === user._id && (
         <Link as={RouterLink} to="/update">
           <Button size={"sm"}>Update Profile</Button>
@@ -78,6 +80,8 @@ const UserHeader = ({ user }) => {
           {following ? "Unfollow" : "Follow"}
         </Button>
       )}
+      <MessageButton user={user} />
+      </Flex>
 
       <Flex w={"full"} justifyContent={"space-between"}>
         <Flex gap={2} alignItems={"center"}>
