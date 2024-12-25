@@ -29,7 +29,6 @@ const MessageContainer = () => {
   const { socket } = useSocket();
   const [, setConversations] = useRecoilState(conversationsAtom);
   const messageEndRef = useRef(null);
-
 useEffect(() => {
   socket.on("newMessage", (message) => {
     // Chỉ thêm tin nhắn mới vào hội thoại hiện tại
@@ -101,14 +100,14 @@ useEffect(() => {
           setMessages([
             {
               _id: "1",
-              text: "Hello! This is a mock conversation.",
+              text: "",
               sender: selectedConversation.userId,
               createdAt: new Date().toISOString(),
               seen: true,
             },
             {
               _id: "2",
-              text: "Feel free to send a message!",
+              text: "",
               sender: currentUser._id,
               createdAt: new Date().toISOString(),
               seen: true,
