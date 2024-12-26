@@ -8,7 +8,7 @@ import { RxAvatar } from "react-icons/rx";
 import { FiLogOut } from "react-icons/fi";
 import useLogOut from "../hooks/useLogout.js";
 import { FaRegMessage } from "react-icons/fa6";
-import SearchUser from "../components/SearchUserInput";
+import SearchUser from "./SearchUser.jsx";
 // import authScreenAtom from "../atoms/authAtom.js";
 
 const Header = () => {

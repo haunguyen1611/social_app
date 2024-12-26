@@ -9,7 +9,7 @@ const MessageButton = ({ user }) => {
   const currentUser = useRecoilValue(userAtom); // Lấy thông tin currentUser từ Recoil
   const [, setSelectedConversation] = useRecoilState(selectedConversationAtom); // Dùng để lưu cuộc hội thoại đã chọn
   const [conversations, setConversations] = useRecoilState(conversationsAtom); // Dùng để lưu danh sách cuộc hội thoại
-  const navigate = useNavigate(); // Dùng để điều hướng đến trang chat
+  const navigate = useNavigate(); 
 
   const handleMessageClick = () => {
     // Kiểm tra xem user và currentUser có giá trị hợp lệ không
