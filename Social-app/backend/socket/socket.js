@@ -9,7 +9,6 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: process.env.APP_URL || "http://localhost:5000", // Đảm bảo cài đặt đúng origin của client
-	  "https://social-app-art8.onrender.com",
     methods: ["GET", "POST"],
   },
 });
