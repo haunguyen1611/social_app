@@ -14,13 +14,11 @@ export const SocketContextProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
   const user = useRecoilValue(userAtom);
   const [onlineUsers, setOnlineUsers] = useState([]);
-
-  const socketUrl=process.env.APP_URL || "https://social-app-art8.onrender.com";
   
   useEffect(() => {
     if (user?._id) {
       // Khởi tạo socket và kết nối với server
-      const newSocket = io("socketUrl", {
+      const newSocket = io("http://localhost:5000", {
         query: {
           userId: user._id,
         },
