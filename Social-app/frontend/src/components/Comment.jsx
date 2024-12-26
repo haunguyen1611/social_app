@@ -8,7 +8,7 @@ const Comment = ({ reply, lastReply }) => {
     <>
       <Flex gap={4} py={2} my={2} w={"full"}>
         <Avatar src={reply?.userProfilePic } size={"sm"} cursor={"pointer"} onClick={() => {
-              navigate(`/${reply?.username}`);
+              navigate(`/${reply.username}`);
             }}
           />
         <Flex gap={1} w={"full"} flexDirection={"column"}>
