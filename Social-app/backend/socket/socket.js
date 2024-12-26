@@ -6,9 +6,10 @@ import Conversation from "../models/conversationModel.js";
 
 const app = express();
 const server = http.createServer(app);
+const socketServerUrl=process.env.APP_URL || "https://social-app-art8.onrender.com";
 const io = new Server(server, {
   cors: {
-    origin: process.env.APP_URL || "http://localhost:5000", // Đảm bảo cài đặt đúng origin của client
+    origin: socketServerUrl, 
     methods: ["GET", "POST"],
   },
 });
