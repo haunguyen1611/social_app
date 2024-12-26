@@ -48,7 +48,7 @@ if (process.env.NODE_ENV === "production") {
 
     // React app
     app.get("*", (req, res) => {
-        res.sendFile(path.resolve(__dirname, "/frontend/dist", "index.html"));
+        res.sendFile(path.resolve(__dirname, "frontend/dist", "index.html"));
     });
 }
 
