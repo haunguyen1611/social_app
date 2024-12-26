@@ -1,4 +1,5 @@
 import express, { json } from "express";
+import cors from "cors";
 import path from "path";
 import dotenv from "dotenv";
 import connectDB from "./db/connectDB.js";
@@ -21,6 +22,14 @@ cloudinary.config({
     api_key : process.env.CLOUDINARY_API_KEY,
     api_secret : process.env.CLOUDINARY_API_SECRET,
 })
+
+app.use(cors(
+    {
+        origin: "http://",
+        methods: ["GET","POST","PUT","DELETE"],
+        credentials: true
+    }
+)); //To allow cross-origin requests
 
 // Middleware
 app.use(express.json({ limit: '50mb' })); //To parse Json data in the req.body

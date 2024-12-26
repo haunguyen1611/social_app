@@ -188,8 +188,8 @@ const updateUser = async (req, res) => {
 
 // Get User Profile
 const getUserProfile = async (req, res) => {
-  // We will fetch user profile either with username or userId
-  // query is either username or userId
+  // Lấy thông tin bằng username hoặc userId
+  // query có thể là username hoặc userId
   const { query } = req.params;
 
   try {
