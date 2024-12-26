@@ -25,7 +25,7 @@ cloudinary.config({
 
 app.use(cors(
     {
-        origin: process.env.APP_URL ||"http://localhost:5000",
+        origin: process.env.APP_URL ,
         methods: ["GET","POST","PUT","DELETE"],
         credentials: true
     }
