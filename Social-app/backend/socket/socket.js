@@ -8,7 +8,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: process.env.APP_URL || "http://localhost:5000", // Đảm bảo cài đặt đúng origin của client
+    origin: process.env.SOCKET_SERVER_URL || "http://localhost:5000", // Đảm bảo cài đặt đúng origin của client
     methods: ["GET", "POST"],
   },
 });
