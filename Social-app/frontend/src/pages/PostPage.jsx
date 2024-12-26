@@ -81,7 +81,16 @@ const PostPage = () => {
     <>
       <Flex>
         <Flex w={"full"} alignItems={"center"} gap={3}>
-          <Avatar src={user?.profilePic} size="md" name={user?.name} />
+          <Avatar
+            src={user?.profilePic}
+            size="md"
+            name={user?.name}
+            onClick={() => {
+              console.log("Avatar clicked!")
+              navigate(`/${user.username}`);
+            }}
+            cursor={"pointer"}
+          />
           <Flex>
             <Text fontSize={"sm"} fontWeight={"bold"}>
               {user.username}
