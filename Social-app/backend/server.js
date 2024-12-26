@@ -23,14 +23,6 @@ cloudinary.config({
     api_secret : process.env.CLOUDINARY_API_SECRET,
 })
 
-app.use(cors(
-    {
-        origin: "",
-        methods: ["GET","POST","PUT","DELETE"],
-        credentials: true
-    }
-)); //To allow cross-origin requests
-
 // Middleware
 app.use(express.json({ limit: '50mb' })); //To parse Json data in the req.body
 app.use(express.urlencoded({extended: false})) //To parse form data in the req.body
