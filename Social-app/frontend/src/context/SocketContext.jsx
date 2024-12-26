@@ -18,7 +18,7 @@ export const SocketContextProvider = ({ children }) => {
   useEffect(() => {
     if (user?._id) {
       // Khởi tạo socket và kết nối với server
-      const newSocket = io("process.env.SOCKET_SERVER_URL", {
+      const newSocket = io("process.env.APP_URL", {
         query: {
           userId: user._id,
         },
