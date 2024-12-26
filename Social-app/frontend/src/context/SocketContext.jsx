@@ -18,7 +18,7 @@ export const SocketContextProvider = ({ children }) => {
   useEffect(() => {
     if (user?._id) {
       // Khởi tạo socket và kết nối với server
-      const newSocket = io("https://social-app-art8.onrender.com", {
+      const newSocket = io("process.env.SOCKET_SERVER_URL", {
         query: {
           userId: user._id,
         },
