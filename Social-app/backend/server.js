@@ -25,7 +25,7 @@ cloudinary.config({
 
 app.use(cors(
     {
-        origin: "http://localhost:5000",
+        origin: "https://social-app-seven-ashen.vercel.app",
         methods: ["GET","POST","PUT","DELETE"],
         credentials: true
     }
