@@ -41,7 +41,7 @@ const usePreviewImg = () => {
 					const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.8);
 					setImgUrl(compressedDataUrl);
 				};
-				img.src = reader.result;
+				img.src = reader.result.toString();
 			};
 
 			reader.readAsDataURL(file);
