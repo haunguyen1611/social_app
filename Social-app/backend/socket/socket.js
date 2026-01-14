@@ -8,8 +8,11 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: process.env.APP_URL ||"http://localhost:5000", // Đảm bảo cài đặt đúng origin của client
+    origin: process.env.NODE_ENV === "production"
+      ? process.env.APP_URL
+      : "http://localhost:3000",
     methods: ["GET", "POST"],
+    credentials: true,
   },
 });
 
@@ -29,20 +32,20 @@ io.on("connection", (socket) => {
   if (userId !== "undefined") {
     userSocketMap[userId] = socket.id;
   }
-  
+
   // Phát danh sách người dùng trực tuyến cho tất cả các client mỗi khi có kết nối
   io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
   // Xử lý đọc tin nhắn và cuộc hội thoại 
   socket.on("markMessagesAsSeen", async ({ conversationId, userId }) => {
-		try {
-			await Message.updateMany({ conversationId: conversationId, seen: false }, { $set: { seen: true } });
-			await Conversation.updateOne({ _id: conversationId }, { $set: { "lastMessage.seen": true } });
-			io.to(userSocketMap[userId]).emit("messagesSeen", { conversationId });
-		} catch (error) {
-			console.log(error);
-		}
-	});
+    try {
+      await Message.updateMany({ conversationId: conversationId, seen: false }, { $set: { seen: true } });
+      await Conversation.updateOne({ _id: conversationId }, { $set: { "lastMessage.seen": true } });
+      io.to(userSocketMap[userId]).emit("messagesSeen", { conversationId });
+    } catch (error) {
+      console.log(error);
+    }
+  });
 
   // Xử lý sự kiện ngắt kết nối
   socket.on("disconnect", () => {

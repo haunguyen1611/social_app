@@ -20,9 +20,12 @@ const HomePage = () => {
         const data = await res.json();
         if (data.error) {
           showToast("Error", data.error, "error");
+          return;
         }
         console.log(data);
-        setPosts(data);
+        if (Array.isArray(data)) {
+          setPosts(data);
+        }
       } catch (error) {
         showToast("Error", error.message, "error");
       } finally {
@@ -44,17 +47,17 @@ const HomePage = () => {
           </Flex>
         )}
 
-        {posts.map((post) => (
+        {posts?.map((post) => (
           <Post key={post._id} post={post} postedBy={post.postedBy} />
         ))}
       </Box>
       <Box flex={30}
-          display={{
-            base: "none",
-            md: "block",
-          }}
-      ><SuggestedUsers/></Box>
-      <CreatePost/>
+        display={{
+          base: "none",
+          md: "block",
+        }}
+      ><SuggestedUsers /></Box>
+      <CreatePost />
     </Flex>
   );
 };

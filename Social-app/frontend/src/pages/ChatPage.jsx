@@ -64,7 +64,9 @@ const ChatPage = () => {
           showToast("Error", data.error, "error");
           return;
         }
-        setConversations(data);
+        if (Array.isArray(data)) {
+          setConversations(data);
+        }
       } catch (error) {
         showToast("Error", error.message, "error");
       } finally {
@@ -200,7 +202,7 @@ const ChatPage = () => {
             ))}
 
           {!loadingConversations &&
-            conversations.map((conversation) => (
+            conversations?.map((conversation) => (
               <Conversation
                 key={conversation._id}
                 isOnline={onlineUsers.includes(

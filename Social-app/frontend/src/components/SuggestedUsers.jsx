@@ -19,7 +19,9 @@ const SuggestedUsers = () => {
           showToast("Error", data.error, "error");
           return;
         }
-        setSuggestedUser(data);
+        if (Array.isArray(data)) {
+          setSuggestedUser(data);
+        }
       } catch (error) {
         showToast("Error", error.message, "error");
       } finally {
